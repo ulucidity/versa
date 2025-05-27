@@ -345,8 +345,12 @@ protected:
     }
     virtual int default_prepare_response_to_unknown_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
         int err = 0;
-        LOGGER_IS_LOGGED_INFO("response.assign(request = \"" << request << "\")...");
-        response.assign(request);
+        LOGGER_IS_LOGGED_INFO("(!(err = all_prepare_response_to_echo_request_run(response, request, argc, argv, env)))...");
+        if (!(err = all_prepare_response_to_echo_request_run(response, request, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...(!(" << err << " = all_prepare_response_to_echo_request_run(response, request, argc, argv, env)))");
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on(!(" << err << " = all_prepare_response_to_echo_request_run(response, request, argc, argv, env)))");
+        }
         return err;
     }
     virtual int before_prepare_response_to_unknown_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
@@ -369,6 +373,59 @@ protected:
             int err2 = 0;
             err = prepare_response_to_unknown_request_run(response, request, argc, argv, env);
             if ((err2 = after_prepare_response_to_unknown_request_run(response, request, argc, argv, env))) {
+                if (!(err)) err = err2;
+            }
+        }
+        return err;
+    }
+    //////////////////////////////////////////////////////////////////////////
+    /// ...prepare_response_to_echo_request_run
+    int (derives::*prepare_response_to_echo_request_run_)(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env);
+    virtual int prepare_response_to_echo_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (prepare_response_to_echo_request_run_) {
+            LOGGER_IS_LOGGED_INFO("(!(err = (this->*prepare_response_to_echo_request_run_)(response, request, argc, argv, env)))...");
+            if (!(err = (this->*prepare_response_to_echo_request_run_)(response, request, argc, argv, env))) {
+                LOGGER_IS_LOGGED_INFO("...(!(" << err << " = (this->*prepare_response_to_echo_request_run_)(response, request, argc, argv, env)))");
+            } else {
+                LOGGER_IS_LOGGED_INFO("...failed on (!(" << err << " = (this->*prepare_response_to_echo_request_run_)(response, request, argc, argv, env)))");
+            }
+        } else {
+            LOGGER_IS_LOGGED_INFO("(!(err = default_prepare_response_to_echo_request_run(response, request, argc, argv, env)))...");
+            if (!(err = default_prepare_response_to_echo_request_run(response, request, argc, argv, env))) {
+                LOGGER_IS_LOGGED_INFO("...(!(" << err << " = default_prepare_response_to_echo_request_run(response, request, argc, argv, env)))");
+            } else {
+                LOGGER_IS_LOGGED_INFO("...failed on(!(" << err << " = default_prepare_response_to_echo_request_run(response, request, argc, argv, env)))");
+            }
+        }
+        return err;
+    }
+    virtual int default_prepare_response_to_echo_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        LOGGER_IS_LOGGED_INFO("response.assign(request = \"" << request << "\")...");
+        response.assign(request);
+        return err;
+    }
+    virtual int before_prepare_response_to_echo_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (!(err = set_prepare_response_to_echo_request_to_output_run(argc, argv, env))) {
+            if (!(err = prepare_response_to_echo_request_to_output_run_set(argc, argv, env))) {
+            } else {
+            }
+        } else {
+        }
+        return err;
+    }
+    virtual int after_prepare_response_to_echo_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int all_prepare_response_to_echo_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (!(err = before_prepare_response_to_echo_request_run(response, request, argc, argv, env))) {
+            int err2 = 0;
+            err = prepare_response_to_echo_request_run(response, request, argc, argv, env);
+            if ((err2 = after_prepare_response_to_echo_request_run(response, request, argc, argv, env))) {
                 if (!(err)) err = err2;
             }
         }
@@ -459,6 +516,51 @@ protected:
             int err2 = 0;
             err = prepare_response_to_restart_request_run(response, request, argc, argv, env);
             if ((err2 = after_prepare_response_to_restart_request_run(response, request, argc, argv, env))) {
+                if (!(err)) err = err2;
+            }
+        }
+        return err;
+    }
+    //////////////////////////////////////////////////////////////////////////
+    /// ...prepare_response_to_start_request_run
+    int (derives::*prepare_response_to_start_request_run_)(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env);
+    virtual int prepare_response_to_start_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (prepare_response_to_start_request_run_) {
+            LOGGER_IS_LOGGED_INFO("(!(err = (this->*prepare_response_to_start_request_run_)(response, request, argc, argv, env)))...");
+            if (!(err = (this->*prepare_response_to_start_request_run_)(response, request, argc, argv, env))) {
+                LOGGER_IS_LOGGED_INFO("...(!(" << err << " = (this->*prepare_response_to_start_request_run_)(response, request, argc, argv, env)))");
+            } else {
+                LOGGER_IS_LOGGED_INFO("...failed on (!(" << err << " = (this->*prepare_response_to_start_request_run_)(response, request, argc, argv, env)))");
+            }
+        } else {
+            LOGGER_IS_LOGGED_INFO("(!(err = default_prepare_response_to_start_request_run(response, request, argc, argv, env)))...");
+            if (!(err = default_prepare_response_to_start_request_run(response, request, argc, argv, env))) {
+                LOGGER_IS_LOGGED_INFO("...(!(" << err << " = default_prepare_response_to_start_request_run(response, request, argc, argv, env)))");
+            } else {
+                LOGGER_IS_LOGGED_INFO("...failed on(!(" << err << " = default_prepare_response_to_start_request_run(response, request, argc, argv, env)))");
+            }
+        }
+        return err;
+    }
+    virtual int default_prepare_response_to_start_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int before_prepare_response_to_start_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int after_prepare_response_to_start_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int all_prepare_response_to_start_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (!(err = before_prepare_response_to_start_request_run(response, request, argc, argv, env))) {
+            int err2 = 0;
+            err = prepare_response_to_start_request_run(response, request, argc, argv, env);
+            if ((err2 = after_prepare_response_to_start_request_run(response, request, argc, argv, env))) {
                 if (!(err)) err = err2;
             }
         }
@@ -1016,6 +1118,30 @@ protected:
         return err;
     }
     virtual int prepare_response_to_output_run_unset(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    //////////////////////////////////////////////////////////////////////////
+    /// ...prepare_response_to_echo_request_to_output_run
+    virtual int prepare_response_to_echo_request_to_output_run(string_t& response, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int set_prepare_response_to_echo_request_to_output_run(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        prepare_response_to_output_run_ = &derives::prepare_response_to_echo_request_to_output_run;
+        return err;
+    }
+    virtual int prepare_response_to_echo_request_to_output_run_set(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int unset_prepare_response_to_echo_request_to_output_run(int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        prepare_response_to_output_run_ = 0;
+        return err;
+    }
+    virtual int prepare_response_to_echo_request_to_output_run_unset(int argc, char_t** argv, char_t** env) {
         int err = 0;
         return err;
     }

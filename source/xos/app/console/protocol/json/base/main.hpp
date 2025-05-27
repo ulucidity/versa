@@ -16,7 +16,7 @@
 ///   File: main.hpp
 ///
 /// Author: $author$
-///   Date: 10/20/2024, 2/22/2025
+///   Date: 10/20/2024, 5/13/2025
 //////////////////////////////////////////////////////////////////////////
 #ifndef XOS_APP_CONSOLE_PROTOCOL_JSON_BASE_MAIN_HPP
 #define XOS_APP_CONSOLE_PROTOCOL_JSON_BASE_MAIN_HPP
@@ -74,6 +74,9 @@ public:
       stop_request_("{\"system\":{\"action\":\"stop\"}}"),
       stop_response_(stop_request_),
     
+      unknown_request_("{\"system\":{\"request\":\"unknown\"}}"),
+      unknown_response_("{\"system\":{\"response\":\"unknown\"}}"),
+    
       request_(hello_request_),
       response_(hello_response_) {
     }
@@ -101,6 +104,33 @@ protected:
         }
         return err;
     }
+
+    //////////////////////////////////////////////////////////////////////////
+    /// ...process_json_node_run
+    virtual int process_json_node_run(const json_node_t& json_node, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int before_process_json_node_run(const json_node_t& json_node, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int after_process_json_node_run(const json_node_t& json_node, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        return err;
+    }
+    virtual int all_process_json_node_run(const json_node_t& json_node, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        if (!(err = before_process_json_node_run(json_node, argc, argv, env))) {
+            int err2 = 0;
+            err = process_json_node_run(json_node, argc, argv, env);
+            if ((err2 = after_process_json_node_run(json_node, argc, argv, env))) {
+                if (!(err)) err = err2;
+            }
+        }
+        return err;
+    }
+    //////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
     /// ...process_json_node_response_run
@@ -137,17 +167,27 @@ protected:
     /// ...prepare_to_process_unknown_response_run
     virtual int prepare_to_process_unknown_response_run(string_t& response, int argc, char_t** argv, char_t** env) {
         int err = 0;
-        to_json_node_t to_json_node;
-        json_node_t json_node;
-        
-        LOGGER_IS_LOGGED_INFO("to_json_node.to(json_node, \"" << response << "\")...");
-        to_json_node.to(json_node, response);
-        LOGGER_IS_LOGGED_INFO("...to_json_node.to(json_node, \"" << response << "\")");
-        LOGGER_IS_LOGGED_INFO("!(err = all_process_json_node_response_run(\"" << response << "\", json_node, argc, argv, env))...");
-        if (!(err = all_process_json_node_response_run(response, json_node, argc, argv, env))) {
-            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_process_json_node_response_run(\"" << response << "\", json_node, argc, argv, env))");
+        string_t& default_unknown_response = this->default_unknown_response();
+        LOGGER_IS_LOGGED_INFO("(!(err = this->default_prepare_to_process_unknown_response_run(default_unknown_response, argc, argv, env)))...");
+        if (!(err = this->default_prepare_to_process_unknown_response_run(default_unknown_response, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...(!(" << err << " = this->default_prepare_to_process_unknown_response_run(default_unknown_response, argc, argv, env)))");
+            to_json_node_t to_json_node;
+            json_node_t json_node;
+            
+            LOGGER_IS_LOGGED_INFO("to_json_node.to(json_node, \"" << response << "\")...");
+            to_json_node.to(json_node, response);
+            LOGGER_IS_LOGGED_INFO("...to_json_node.to(json_node, \"" << response << "\")");
+            LOGGER_IS_LOGGED_INFO("!(err = all_process_json_node_response_run(\"" << response << "\", json_node, argc, argv, env))...");
+            if (!(err = all_process_json_node_response_run(response, json_node, argc, argv, env))) {
+                LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_process_json_node_response_run(\"" << response << "\", json_node, argc, argv, env))");
+                if (0 >= (response.length())) {
+                    response.assign(default_unknown_response);
+                } else {}
+            } else {
+                LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_process_json_node_response_run(\"" << response << "\", json_node, argc, argv, env))");
+            }
         } else {
-            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_process_json_node_response_run(\"" << response << "\", json_node, argc, argv, env))");
+            LOGGER_IS_LOGGED_INFO("...failed on(!(" << err << " = this->default_prepare_to_process_unknown_response_run(default_unknown_response, argc, argv, env)))");
         }
         return err;
     }
@@ -188,17 +228,23 @@ protected:
     /// ...prepare_response_to_unknown_request_run
     virtual int prepare_response_to_unknown_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
         int err = 0;
-        to_json_node_t to_json_node;
-        json_node_t json_node;
-        
-        LOGGER_IS_LOGGED_INFO("to_json_node.to(json_node, \"" << request << "\")...");
-        to_json_node.to(json_node, request);
-        LOGGER_IS_LOGGED_INFO("...to_json_node.to(json_node, \"" << request << "\")");
-        LOGGER_IS_LOGGED_INFO("!(err = all_prepare_response_to_json_node_request_run(response, \"" << request << "\", json_node, argc, argv, env))...");
-        if (!(err = all_prepare_response_to_json_node_request_run(response, request, json_node, argc, argv, env))) {
-            LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_prepare_response_to_json_node_request_run(response, \"" << request << "\", json_node, argc, argv, env))");
+        LOGGER_IS_LOGGED_INFO("(!(err = this->default_prepare_response_to_unknown_request_run(response, request, argc, argv, env)))...");
+        if (!(err = this->default_prepare_response_to_unknown_request_run(response, request, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...(!(" << err << " = this->default_prepare_response_to_unknown_request_run(response, request, argc, argv, env)))");
+            to_json_node_t to_json_node;
+            json_node_t json_node;
+            
+            LOGGER_IS_LOGGED_INFO("to_json_node.to(json_node, \"" << request << "\")...");
+            to_json_node.to(json_node, request);
+            LOGGER_IS_LOGGED_INFO("...to_json_node.to(json_node, \"" << request << "\")");
+            LOGGER_IS_LOGGED_INFO("!(err = all_prepare_response_to_json_node_request_run(response, \"" << request << "\", json_node, argc, argv, env))...");
+            if (!(err = all_prepare_response_to_json_node_request_run(response, request, json_node, argc, argv, env))) {
+                LOGGER_IS_LOGGED_INFO("...!(" << err << " = all_prepare_response_to_json_node_request_run(response, \"" << request << "\", json_node, argc, argv, env))");
+            } else {
+                LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_prepare_response_to_json_node_request_run(response, \"" << request << "\", json_node, argc, argv, env))");
+            }
         } else {
-            LOGGER_IS_LOGGED_INFO("...failed on !(" << err << " = all_prepare_response_to_json_node_request_run(response, \"" << request << "\", json_node, argc, argv, env))");
+            LOGGER_IS_LOGGED_INFO("...failed on(!(" << err << " = this->default_prepare_response_to_unknown_request_run(response, request, argc, argv, env)))");
         }
         return err;
     }
@@ -206,6 +252,9 @@ protected:
 
     //////////////////////////////////////////////////////////////////////////
     /// ...hello_request
+    virtual string_t& set_system_hello_request() {
+        return set_to_hello_request();
+    }
     virtual string_t& set_to_hello_request() {
         const string_t &hello_request = this->hello_request();
         string_t &request = this->request();
@@ -224,6 +273,9 @@ protected:
 
     //////////////////////////////////////////////////////////////////////////
     /// ...restart_request
+    virtual string_t& set_system_restart_request() {
+        return set_to_restart_request();
+    }
     virtual string_t& set_to_restart_request() {
         const string_t &restart_request = this->restart_request();
         string_t &request = this->request();
@@ -241,7 +293,31 @@ protected:
     //////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
+    /// ...start_request
+    virtual string_t& set_system_start_request() {
+        return set_to_start_request();
+    }
+    virtual string_t& set_to_start_request() {
+        const string_t &start_request = this->start_request();
+        string_t &request = this->request();
+        request.assign(start_request);
+        return request;
+    }
+    virtual string_t& start_request() const {
+        return (string_t&)restart_request_;
+    }
+    //////////////////////////////////////////////////////////////////////////
+    /// ...start_response
+    virtual string_t& start_response() const {
+        return (string_t&)restart_response_;
+    }
+    //////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////
     /// ...stop_request
+    virtual string_t& set_system_stop_request() {
+        return set_to_stop_request();
+    }
     virtual string_t& set_to_stop_request() {
         const string_t &stop_request = this->stop_request();
         string_t &request = this->request();
@@ -259,6 +335,36 @@ protected:
     //////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
+    /// ...unknown_request
+    virtual string_t& set_system_unknown_request() {
+        return set_to_unknown_request();
+    }
+    virtual string_t& set_to_unknown_request() {
+        const string_t &unknown_request = this->unknown_request();
+        string_t &request = this->request();
+        request.assign(unknown_request);
+        return request;
+    }
+    virtual string_t& unknown_request() const {
+        return (string_t&)unknown_request_;
+    }
+    //////////////////////////////////////////////////////////////////////////
+    /// ...unknown_response
+    virtual string_t& set_system_unknown_response() {
+        return set_to_unknown_response();
+    }
+    virtual string_t& set_to_unknown_response() {
+        const string_t &unknown_response = this->unknown_response();
+        string_t &response = this->response();
+        response.assign(unknown_response);
+        return response;
+    }
+    virtual string_t& unknown_response() const {
+        return (string_t&)unknown_response_;
+    }
+    //////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////
     /// ...request
     virtual string_t& request() const {
         return (string_t&)request_;
@@ -268,13 +374,18 @@ protected:
     virtual string_t& response() const {
         return (string_t&)response_;
     }
+    virtual string_t& default_unknown_response() const {
+        return (string_t&)default_unknown_response_;
+    }
     //////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
 protected:
     string_t hello_request_, hello_response_, 
              restart_request_, restart_response_, 
-             stop_request_, stop_response_, request_, response_;
+             stop_request_, stop_response_, 
+             unknown_request_, unknown_response_, 
+             request_, response_, default_unknown_response_;
 }; /// class maint 
 typedef maint<> main;
 

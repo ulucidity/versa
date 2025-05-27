@@ -68,6 +68,9 @@ public:
       restart_request_("restart"),
       restart_response_(restart_request_),
 
+      start_request_("start"),
+      start_response_(start_response_),
+
       stop_request_("stop"),
       stop_response_(stop_request_),
 
@@ -131,6 +134,7 @@ protected:
         int err = 0;
         int unequal = 0;
         const string_t& hello_request = this->hello_request();
+        LOGGER_IS_LOGGED_INFO("(!(unequal = request.compare(hello_request)))...");
         if (!(unequal = request.compare(hello_request))) {
             LOGGER_IS_LOGGED_INFO("(!(err = this->all_prepare_response_to_hello_request_run(\"" << response << "\", \"" << request << "\", argc, argv, env)))...");
             if (!(err = this->all_prepare_response_to_hello_request_run(response, request, argc, argv, env))) {
@@ -140,6 +144,7 @@ protected:
             }
         } else {
             const string_t& restart_request = this->restart_request();
+            LOGGER_IS_LOGGED_INFO("(!(unequal = request.compare(restart_request)))...");
             if (!(unequal = request.compare(restart_request))) {
                 LOGGER_IS_LOGGED_INFO("(!(err = this->all_prepare_response_to_restart_request_run(\"" << response << "\", \"" << request << "\", argc, argv, env)))...");
                 if (!(err = this->all_prepare_response_to_restart_request_run(response, request, argc, argv, env))) {
@@ -148,20 +153,32 @@ protected:
                     LOGGER_IS_LOGGED_INFO("...failed on(!(" << err << " = this->all_prepare_response_to_restart_request_run(\"" << response << "\", \"" << request << "\", argc, argv, env)))");
                 }
             } else {
-                const string_t& stop_request = this->stop_request();
-                if (!(unequal = request.compare(stop_request))) {
-                    LOGGER_IS_LOGGED_INFO("(!(err = this->all_prepare_response_to_stop_request_run(\"" << response << "\", \"" << request << "\", argc, argv, env)))...");
-                    if (!(err = this->all_prepare_response_to_stop_request_run(response, request, argc, argv, env))) {
-                        LOGGER_IS_LOGGED_INFO("...(!(" << err << " = this->all_prepare_response_to_stop_request_run(\"" << response << "\", \"" << request << "\", argc, argv, env)))");
+                const string_t& start_request = this->start_request();
+                LOGGER_IS_LOGGED_INFO("(!(unequal = request.compare(start_request)))...");
+                if (!(unequal = request.compare(start_request))) {
+                    LOGGER_IS_LOGGED_INFO("(!(err = this->all_prepare_response_to_start_request_run(\"" << response << "\", \"" << request << "\", argc, argv, env)))...");
+                    if (!(err = this->all_prepare_response_to_start_request_run(response, request, argc, argv, env))) {
+                        LOGGER_IS_LOGGED_INFO("...(!(" << err << " = this->all_prepare_response_to_start_request_run(\"" << response << "\", \"" << request << "\", argc, argv, env)))");
                     } else {
-                        LOGGER_IS_LOGGED_INFO("...failed on(!(" << err << " = this->all_prepare_response_to_stop_request_run(\"" << response << "\", \"" << request << "\", argc, argv, env)))");
+                        LOGGER_IS_LOGGED_INFO("...failed on(!(" << err << " = this->all_prepare_response_to_start_request_run(\"" << response << "\", \"" << request << "\", argc, argv, env)))");
                     }
                 } else {
-                    LOGGER_IS_LOGGED_INFO("(!(err = this->all_prepare_response_to_unknown_request_run(\"" << response << "\", \"" << request << "\", argc, argv, env)))...");
-                    if (!(err = this->all_prepare_response_to_unknown_request_run(response, request, argc, argv, env))) {
-                        LOGGER_IS_LOGGED_INFO("...(!(" << err << " = this->all_prepare_response_to_unknown_request_run(\"" << response << "\", \"" << request << "\", argc, argv, env)))");
+                    const string_t& stop_request = this->stop_request();
+                    LOGGER_IS_LOGGED_INFO("(!(unequal = request.compare(stop_request)))...");
+                    if (!(unequal = request.compare(stop_request))) {
+                        LOGGER_IS_LOGGED_INFO("(!(err = this->all_prepare_response_to_stop_request_run(\"" << response << "\", \"" << request << "\", argc, argv, env)))...");
+                        if (!(err = this->all_prepare_response_to_stop_request_run(response, request, argc, argv, env))) {
+                            LOGGER_IS_LOGGED_INFO("...(!(" << err << " = this->all_prepare_response_to_stop_request_run(\"" << response << "\", \"" << request << "\", argc, argv, env)))");
+                        } else {
+                            LOGGER_IS_LOGGED_INFO("...failed on(!(" << err << " = this->all_prepare_response_to_stop_request_run(\"" << response << "\", \"" << request << "\", argc, argv, env)))");
+                        }
                     } else {
-                        LOGGER_IS_LOGGED_INFO("...failed on(!(" << err << " = this->all_prepare_response_to_unknown_request_run(\"" << response << "\", \"" << request << "\", argc, argv, env)))");
+                        LOGGER_IS_LOGGED_INFO("(!(err = this->all_prepare_response_to_unknown_request_run(\"" << response << "\", \"" << request << "\", argc, argv, env)))...");
+                        if (!(err = this->all_prepare_response_to_unknown_request_run(response, request, argc, argv, env))) {
+                            LOGGER_IS_LOGGED_INFO("...(!(" << err << " = this->all_prepare_response_to_unknown_request_run(\"" << response << "\", \"" << request << "\", argc, argv, env)))");
+                        } else {
+                            LOGGER_IS_LOGGED_INFO("...failed on(!(" << err << " = this->all_prepare_response_to_unknown_request_run(\"" << response << "\", \"" << request << "\", argc, argv, env)))");
+                        }
                     }
                 }
             }
@@ -187,6 +204,32 @@ protected:
         return err;
     }
     virtual int after_prepare_response_to_restart_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        bool restart = false;
+        LOGGER_IS_LOGGED_INFO("(true == (restart = set_restart(true)))...");
+        if (true == (restart = set_restart(true))) {
+            LOGGER_IS_LOGGED_INFO("...(true == (" << restart << " = set_restart(true)))");
+            LOGGER_IS_LOGGED_INFO("(true == (restart = restart_set(" << restart << ")))...");
+            if (true == (restart = restart_set(restart))) {
+                LOGGER_IS_LOGGED_INFO("...(true == (" << restart << " = restart_set(" << restart << ")))");
+            } else {
+                LOGGER_IS_LOGGED_INFO("...failed on (true == (" << restart << " = restart_set(" << restart << ")))");
+            }
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on (true == (" << restart << " = set_restart(true)))");
+        }
+        return err;
+    }
+    //////////////////////////////////////////////////////////////////////////
+    /// ...prepare_response_to_start_request_run
+    virtual int default_prepare_response_to_start_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        const string_t& start_response = this->start_response();
+        LOGGER_IS_LOGGED_INFO("response.assign(start_response = \"" << start_response << "\")...");
+        response.assign(start_response);
+        return err;
+    }
+    virtual int after_prepare_response_to_start_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
         int err = 0;
         bool restart = false;
         LOGGER_IS_LOGGED_INFO("(true == (restart = set_restart(true)))...");
@@ -233,9 +276,9 @@ protected:
     /// ...prepare_response_to_unknown_request_run
     virtual int default_prepare_response_to_unknown_request_run(string_t& response, const string_t& request, int argc, char_t** argv, char_t** env) {
         int err = 0;
-        const string_t& unknown_response = this->unknown_response();
-        LOGGER_IS_LOGGED_INFO("response.assign(unknown_response = \"" << unknown_response << "\")...");
-        response.assign(unknown_response);
+        const string_t& unknown_request = this->unknown_request();
+        LOGGER_IS_LOGGED_INFO("response.assign(unknown_request = \"" << unknown_request << "\")...");
+        response.assign(unknown_request);
         return err;
     }
     //////////////////////////////////////////////////////////////////////////
@@ -251,6 +294,53 @@ protected:
         } else {
             LOGGER_IS_LOGGED_INFO("...failed on (!(" << err << " = this->all_process_response_run(\"" << response << "\", argc, argv, env)))");
         }
+        return err;
+    }
+    virtual int default_process_response_run(string_t& response, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        string_t& response_to_process = this->response_to_process();
+        LOGGER_IS_LOGGED_INFO("response_to_process.assign(\"" << response << "\")...");
+        response_to_process.assign(response);
+        LOGGER_IS_LOGGED_INFO("(!(err = this->all_process_unknown_response_run(\"" << response << "\", argc, argv, env)))...");
+        if (!(err = this->all_process_unknown_response_run(response, argc, argv, env))) {
+            LOGGER_IS_LOGGED_INFO("...(!(" << err << " = this->all_process_unknown_response_run(\"" << response << "\", argc, argv, env)))");
+        } else {
+            LOGGER_IS_LOGGED_INFO("...failed on (!(" << err << " = this->all_process_unknown_response_run(\"" << response << "\", argc, argv, env)))");
+        }
+        return err;
+    }
+    //////////////////////////////////////////////////////////////////////////
+    /// ...prepare_to_process_unknown_response_run
+    virtual int default_prepare_to_process_unknown_response_run(string_t& response, int argc, char_t** argv, char_t** env) {
+        int err = 0;
+        const string_t& unknown_response = this->unknown_response();
+        const string_t& hello_response = this->hello_response();
+        int unequal = 0;
+        LOGGER_IS_LOGGED_INFO("(!(unequal = response.compare(hello_response)))...");
+        if (!(unequal = response.compare(hello_response))) {
+            return err;
+        } else {
+            const string_t& restart_response = this->restart_response();
+            LOGGER_IS_LOGGED_INFO("(!(unequal = response.compare(restart_response)))...");
+            if (!(unequal = response.compare(restart_response))) {
+                return err;
+            } else {
+                const string_t& start_response = this->start_response();
+                LOGGER_IS_LOGGED_INFO("(!(unequal = response.compare(start_response)))...");
+                if (!(unequal = response.compare(start_response))) {
+                    return err;
+                } else {
+                    const string_t& stop_response = this->stop_response();
+                    LOGGER_IS_LOGGED_INFO("(!(unequal = response.compare(stop_response)))...");
+                    if (!(unequal = response.compare(stop_response))) {
+                        return err;
+                    } else {
+                    }
+                }
+            }
+        }
+        LOGGER_IS_LOGGED_INFO("response.assign(unknown_response = \"" << unknown_response << "\")...");
+        response.assign(unknown_response);
         return err;
     }
     //////////////////////////////////////////////////////////////////////////
@@ -1610,6 +1700,12 @@ protected:
 
     //////////////////////////////////////////////////////////////////////////
     /// ...restart_request
+    virtual string_t& set_to_restart_request() {
+        const string_t& restart_request = this->restart_request();
+        string_t& request = this->request();
+        request.assign(restart_request);
+        return request;
+    }
     virtual string_t& set_restart_request(const string_t& to) {
         string_t& restart_request = this->restart_request();
         restart_request.assign(to);
@@ -1651,7 +1747,61 @@ protected:
     //////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
+    /// ...start_request
+    virtual string_t& set_to_start_request() {
+        const string_t& start_request = this->start_request();
+        string_t& request = this->request();
+        request.assign(start_request);
+        return request;
+    }
+    virtual string_t& set_start_request(const string_t& to) {
+        string_t& start_request = this->start_request();
+        start_request.assign(to);
+        return start_request;
+    }
+    virtual string_t& set_start_request(const char_t* to) {
+        string_t& start_request = this->start_request();
+        start_request.assign(to);
+        return start_request;
+    }
+    virtual string_t& set_start_request(const char_t* to, size_t length) {
+        string_t& start_request = this->start_request();
+        start_request.assign(to, length);
+        return start_request;
+    }
+    virtual string_t& start_request() const {
+        return (string_t&)start_request_;
+    }
+    //////////////////////////////////////////////////////////////////////////
+    /// ...start_response
+    virtual string_t& set_start_response(const string_t& to) {
+        string_t& start_response = this->start_response();
+        start_response.assign(to);
+        return start_response;
+    }
+    virtual string_t& set_start_response(const char_t* to, size_t length) {
+        string_t& start_response = this->start_response();
+        start_response.assign(to, length);
+        return start_response;
+    }
+    virtual string_t& set_start_response(const char_t* to) {
+        string_t& start_response = this->start_response();
+        start_response.assign(to);
+        return start_response;
+    }
+    virtual string_t& start_response() const {
+        return (string_t&)start_response_;
+    }
+    //////////////////////////////////////////////////////////////////////////
+
+    //////////////////////////////////////////////////////////////////////////
     /// ...stop_request
+    virtual string_t& set_to_stop_request() {
+        const string_t& stop_request = this->stop_request();
+        string_t& request = this->request();
+        request.assign(stop_request);
+        return request;
+    }
     virtual string_t& set_stop_request(const string_t& to) {
         string_t& stop_request = this->stop_request();
         stop_request.assign(to);
@@ -1795,6 +1945,26 @@ protected:
         return (string_t&)response_to_output_;
     }
     //////////////////////////////////////////////////////////////////////////
+    /// ...response_to_process
+    virtual string_t& set_response_to_process(const string_t& to) {
+        string_t& response = this->response_to_process();
+        response.assign(to);
+        return response;
+    }
+    virtual string_t& set_response_to_process(const char_t* to, size_t length) {
+        string_t& response = this->response_to_process();
+        response.assign(to, length);
+        return response;
+    }
+    virtual string_t& set_response_to_process(const char_t* to) {
+        string_t& response = this->response_to_process();
+        response.assign(to);
+        return response;
+    }
+    virtual string_t& response_to_process() const {
+        return (string_t&)response_to_process_;
+    }
+    //////////////////////////////////////////////////////////////////////////
 
     //////////////////////////////////////////////////////////////////////////
     /// ...restart
@@ -1863,6 +2033,10 @@ protected:
         const string_t& endof_message = this->lf();
         return endof_message;
     }
+    virtual const string_t& no_endof_message() const {
+        const string_t& endof_message = this->null_lf();
+        return endof_message;
+    }
     //////////////////////////////////////////////////////////////////////////
     
     //////////////////////////////////////////////////////////////////////////
@@ -1870,9 +2044,10 @@ protected:
     bool restart_, stop_;
     string_t hello_request_, hello_response_, 
              restart_request_, restart_response_, 
+             start_request_, start_response_, 
              stop_request_, stop_response_, 
              unknown_request_, unknown_response_, 
-             request_, response_, response_to_output_;
+             request_, response_, response_to_output_, response_to_process_;
     literal_string_t literal_string_input_, literal_string_read_;
 }; /// class maint 
 typedef maint<> main;
